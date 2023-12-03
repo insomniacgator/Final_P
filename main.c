@@ -73,7 +73,7 @@ int main(void)
     G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
     G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
     G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
-    G8RTOS_AddThread(LED_Thread, 254, "threads\0");
+    //G8RTOS_AddThread(LED_Thread, 254, "threads\0");
     
 
     G8RTOS_Add_APeriodicEvent(GPIOE_Handler, 5, 20);
