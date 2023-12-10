@@ -80,10 +80,13 @@
 #define Y_MAX                       280
 
 // COLORS
+#define ST7789_WHITE               0xFFFF
 #define ST7789_BLACK                0x0000
 #define ST7789_RED                  0x001F
-#define ST7789_BLUE                 0xF800
-#define ST7789_GREEN                0x07E0
+#define ST7789_BLUE                 0b1011000100100000//0xF800
+#define ST7789_GREEN                0x0540
+#define ST7789_PURPLE               0b1100100000011000
+
 
 /*************************************Defines***************************************/
 

@@ -167,6 +167,125 @@ void CamMove_Thread(void) {
     }
 }
 
+void Draw_Display(void)
+{
+    // remove moving -5 stuff from here and change that in character mover or something
+    G8RTOS_WaitSemaphore(&sem_SPIA);
+    ST7789_DrawRectangle(frog.x_pos, frog.y_pos, frog.width, frog.length, ST7789_WHITE);
+    //ST7789_DrawRectangle(frog.x_pos, frog.y_pos-5, frog.width, 5, ST7789_BLACK);
+    G8RTOS_SignalSemaphore(&sem_SPIA);
+}
+
+void CharacterMove_Thread(void) {
+
+
+
+    // Initialize / declare any variables here
+    int32_t joy_x, joy_y = 0;
+    float joy_x_n, joy_y_n = 0;
+    bool down, up, left, right = 0;
+    bool falling = 0;
+    uint32_t result = 0;
+
+    while(1) {
+        // Get result from joystick
+
+        result = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+
+        joy_x = ((result >> 0) & 0xFFFF);
+        joy_y = ((result >> 16) & 0xFFFF);
+
+        //joy_x = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+        //joy_y = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+
+        // If joystick axis within deadzone, set to 0. Otherwise normalize it.
+        if (joy_x < 1500 || joy_x > 2600)
+        {
+            joy_x_n = (2.0 * (joy_x - 0) / (4095 - 0)) - 1.0;
+            if (joy_x_n < 0)
+            {
+                right = 1;
+                left, up, down = 0;
+                UARTprintf("right\n");
+            }
+            else if (joy_x_n > 0)
+            {
+                left = 1;
+                right, up, down = 0;
+                UARTprintf("left\n");
+            }
+        }
+        else
+        {
+            joy_x_n = 0;
+            left, right = 0;
+        }
+
+        if (joy_y < 1500 || joy_y > 2600)
+        {
+            joy_y_n = (2.0 * (joy_y - 0) / (4095 - 0)) - 1.0;
+
+            if (joy_y_n > 0)
+            {
+                up = 1;
+                down, left, right = 0;
+                UARTprintf("up\n");
+            }
+            else if (joy_y_n < 0)
+            {
+                down = 1;
+                up, left, right = 0;
+                UARTprintf("down\n");
+            }
+
+
+        }
+        else
+        {
+            joy_y_n = 0;
+            up, down = 0;
+        }
+
+        /*
+        if (jump)
+        {
+            if (dino.y_pos < 140 && falling == 0)
+            {
+                dino.y_pos += 5;
+                if (dino.y_pos >= 140)
+                    falling = 1;
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
+                ST7789_DrawRectangle(dino.x_pos, dino.y_pos-5, dino.width, 5, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+            else
+            {
+                if (dino.y_pos >= 101 && falling == 1)
+                {
+                    dino.y_pos -= 5;
+                    if (dino.y_pos <= 101)
+                    {
+                        falling = 0;
+                        jump = 0;
+                    }
+                    ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(dino.x_pos, dino.y_pos+5, dino.width, dino.length, ST7789_BLACK);
+                }
+                else
+                    jump = 0;
+            }
+        }
+
+            // CONSIDER MOVING THIS DRAWING TO DISPLAY UPDATE THREAD
+        ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
+        */
+        // sleep
+        sleep(10);
+    }
+}
+
+
 void Cube_Thread(void) {
     cube_t cube;
 
@@ -395,3 +514,19 @@ void GPIOD_Handler() {
 }
 
 /*******************************Aperiodic Threads***********************************/
+
+void InitWorld(void)
+{
+    G8RTOS_WaitSemaphore(&sem_SPIA);
+    ST7789_DrawRectangle(0, 240, 240, 40, ST7789_GREEN);
+    ST7789_DrawRectangle(0, 140, 240, 100, ST7789_BLUE);
+    ST7789_DrawRectangle(0, 120, 240, 20, ST7789_PURPLE);
+    ST7789_DrawRectangle(0, 0, 240, 20, ST7789_PURPLE);
+    ST7789_DrawRectangle(20, 240, 40, 20, ST7789_BLACK);
+    ST7789_DrawRectangle(80, 240, 40, 20, ST7789_BLACK);
+    ST7789_DrawRectangle(140, 240, 40, 20, ST7789_BLACK);
+    ST7789_DrawRectangle(200, 240, 40, 20, ST7789_BLACK);
+    G8RTOS_SignalSemaphore(&sem_SPIA);
+
+}
+

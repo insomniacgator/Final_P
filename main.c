@@ -53,12 +53,18 @@ void task1() {
 
 int main(void)
 {
+    frog.x_pos = 110;
+    frog.y_pos = 0;
+    frog.length = 20;
+    frog.width = 20;
+
     // Sets clock speed to 80 MHz. You'll need it!
 
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
     G8RTOS_Init();
     multimod_init();
 
+    G8RTOS_InitSemaphore(&sem_UART, 1);
     G8RTOS_InitSemaphore(&sem_I2CA, 1);
     G8RTOS_InitSemaphore(&sem_SPIA, 1);
     G8RTOS_InitSemaphore(&sem_PCA9555_Debounce, 0);
@@ -68,19 +74,23 @@ int main(void)
     G8RTOS_InitFIFO(SPAWNCOOR_FIFO);
     G8RTOS_InitFIFO(JOYSTICK_FIFO);
 
+
     G8RTOS_AddThread(task1, 200, "idle\0");
     G8RTOS_AddThread(Idle_Thread, 255, "idle\0");
-    G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
+    //G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
     G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
     G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
+    G8RTOS_AddThread(CharacterMove_Thread, 4, "charactermove_thread\0");
     //G8RTOS_AddThread(LED_Thread, 254, "threads\0");
     
 
     G8RTOS_Add_APeriodicEvent(GPIOE_Handler, 5, 20);
     G8RTOS_Add_APeriodicEvent(GPIOD_Handler, 5, 19);
 
-    G8RTOS_Add_PeriodicEvent(Print_WorldCoords, 100, 2);
-    G8RTOS_Add_PeriodicEvent(Get_Joystick, 50, 1);
+    //G8RTOS_Add_PeriodicEvent(Print_WorldCoords, 100, 2);
+    G8RTOS_Add_PeriodicEvent(Draw_Display, 32, 1);
+    G8RTOS_Add_PeriodicEvent(Get_Joystick, 50, 2);
+    InitWorld();
     G8RTOS_Launch();
     while (1);
 
