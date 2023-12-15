@@ -63,11 +63,9 @@ void Idle_Thread(void) {
 void Draw_Display(void)
 {
 
-        // remove moving -5 stuff from here and change that in character mover or something
+
         // position linked list is going to have a marker to indicate already drawn
-        //uint32_t packet = 0; //G8RTOS_ReadFIFO(CHAR_POS_FIFO);
-        //uint16_t x_pos = (uint16_t)packet;
-        //uint16_t y_pos = (uint16_t)(packet >> 16);
+
 
     if (frog.pos_count) // only if we have 1 position in character position we start drawing everything?
     {
@@ -99,11 +97,12 @@ void Draw_Display(void)
 
 
                     // if we reached wall we have to start disappearing
-                    if (x_pos >= 198)
+                    if (x_pos >= 200)
                     {
                         if (obs.partial >= 2)
                         {
-                            obs.partial = obs.partial - 2;
+                            //obs.partial = obs.partial - 2;
+                            UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs.partial, x_pos, y_pos);
                             G8RTOS_WaitSemaphore(&sem_SPIA);
                             ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_WHITE);
                             ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
@@ -111,8 +110,8 @@ void Draw_Display(void)
                         }
                         else
                         {
-                            obs.partial = 0;
-                            Obstacle_AddPosition(0, 20);
+                            //obs.partial = 0;
+                            //Obstacle_AddPosition(0, 20);
                         }
                     }
                     else
@@ -312,15 +311,20 @@ void Game_Thread(void) {
         // or should we just do the whole vehicle thing here? lets try option 2 first
 
         // Obstacle move
-        if (obs.tail_pos->x_pos <= 230)
+        if (obs.tail_pos->x_pos < 238)
         {
             uint16_t x_pos = obs.tail_pos->x_pos+2;
             uint16_t y_pos = obs.tail_pos->y_pos;
+            if (obs.tail_pos->x_pos > 200)
+            {
+                obs.partial = obs.partial - 2;
+            }
             Obstacle_AddPosition(x_pos, y_pos);
         }
         else
         {
             Obstacle_AddPosition(0, 20);
+            obs.partial = 40;
         }
 
 

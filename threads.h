@@ -18,7 +18,7 @@
 #define JOYSTICK_FIFO       1
 #define CHAR_POS_FIFO       2
 
-#define MAX_NUM_POS         100
+#define MAX_NUM_POS         150
 
 /*************************************Defines***************************************/
 
@@ -118,6 +118,7 @@ void GPIOD_Handler(void);
 /****** Functions ******/
 void InitWorld(void);
 void Character_AddPosition(uint16_t x_pos, uint16_t y_pos);
+void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos);
 
 #endif /* THREADS_H_ */
 
