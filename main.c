@@ -45,9 +45,28 @@ int main(void)
     obs.width = 40;
     obs.pos_count = 0;
     obs.partial = obs.width;
+    obs.pos_write_index, obs.pos_read_index = 0;
     x_pos = 0;
     y_pos = 20;
-    Obstacle_AddPosition(x_pos, y_pos);
+    Obstacle_AddPosition(x_pos, y_pos, &obs);
+
+    obs2.length = 20;
+    obs2.width = 40;
+    obs2.pos_count = 0;
+    obs2.partial = obs2.width;
+    obs2.pos_write_index, obs2.pos_read_index = 0;
+    x_pos = 0;
+    y_pos = 60;
+    Obstacle_AddPosition(x_pos, y_pos, &obs2); // modify obstacle_addposition to include obs param
+
+    obs3.length = 20;
+    obs3.width = 40;
+    obs3.pos_count = 0;
+    obs3.partial = obs3.width;
+    obs3.pos_write_index, obs3.pos_read_index = 0;
+    x_pos = 0;
+    y_pos = 100;
+    Obstacle_AddPosition(x_pos, y_pos, &obs3); // modify obstacle_addposition to include obs param
 
     // Sets clock speed to 80 MHz. You'll need it!
 
@@ -67,7 +86,6 @@ int main(void)
     G8RTOS_InitFIFO(CHAR_POS_FIFO);
 
 
-    //G8RTOS_AddThread(task1, 200, "idle\0");
     G8RTOS_AddThread(Idle_Thread, 255, "idle\0");
     //G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
     G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");

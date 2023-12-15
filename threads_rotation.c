@@ -87,78 +87,176 @@ void Draw_Display(void)
             frog.tail_pos->draw_done = 1;
         }
 
+        // Vehicle 1 Draw
         x_pos = obs.tail_pos->x_pos;
         y_pos = obs.tail_pos->y_pos;
         x_oldpos = obs.tail_pos->previous_pos->x_pos;
         y_oldpos = obs.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
 
-                if ((x_pos || y_pos) && !obs.tail_pos->draw_done)
+        if ((x_pos || y_pos) && !obs.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos >= 200)
+            {
+                if (obs.partial >= 2)
                 {
-
-
-                    // if we reached wall we have to start disappearing
-                    if (x_pos >= 200)
-                    {
-                        if (obs.partial >= 2)
-                        {
-                            //obs.partial = obs.partial - 2;
-                            UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs.partial, x_pos, y_pos);
-                            G8RTOS_WaitSemaphore(&sem_SPIA);
-                            ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_WHITE);
-                            ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
-                            G8RTOS_SignalSemaphore(&sem_SPIA);
-                        }
-                        else
-                        {
-                            //obs.partial = 0;
-                            //Obstacle_AddPosition(0, 20);
-                        }
-                    }
-                    else
-                    {
-                        G8RTOS_WaitSemaphore(&sem_SPIA);
-                        ST7789_DrawRectangle(x_pos, y_pos, obs.width, obs.length, ST7789_WHITE);
-                        ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
-                        G8RTOS_SignalSemaphore(&sem_SPIA);
-                    }
-
-                    obs.tail_pos->draw_done = 1;
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
                 }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, obs.width, obs.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            obs.tail_pos->draw_done = 1;
+        }
+
+        // Vehicle 2 Draw
+        x_pos = obs2.tail_pos->x_pos;
+        y_pos = obs2.tail_pos->y_pos;
+        x_oldpos = obs2.tail_pos->previous_pos->x_pos;
+        y_oldpos = obs2.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !obs2.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos >= 200)
+            {
+                if (1)//(obs2.partial >= 4)
+                {
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs2.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs2.partial, obs2.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos-4, y_pos, 8, obs2.length, ST7789_BLACK);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, obs2.width, obs2.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos-4, y_pos, 8, obs2.length, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            obs2.tail_pos->draw_done = 1;
+        }
+
+        // Vehicle 3 Draw
+        x_pos = obs3.tail_pos->x_pos;
+        y_pos = obs3.tail_pos->y_pos;
+        x_oldpos = obs3.tail_pos->previous_pos->x_pos;
+        y_oldpos = obs3.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !obs3.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos >= 200)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs3.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs3.partial, obs3.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs3.length, ST7789_BLACK);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, obs3.width, obs3.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs3.length, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            obs3.tail_pos->draw_done = 1;
+        }
+
+
+
     }
 
 
 }
 
-void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos)
+void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos, struct obstacle_t *obs_ref)
 {
+    uint8_t j;
+    //struct obstacle_t obs_ref = *obs_add;
+    if (obs_ref->pos_write_index == 0)
+        j = 9; // max_num_pos_obstacle(10) - 1
+    else
+        j = obs_ref->pos_write_index - 1;
 
-    if (obs.pos_count >= MAX_NUM_POS) // if counter exits max number of positions
+    // this needs to be number of positions and not pos_count, hence commented below
+    if (obs_ref->pos_count >= 10000) // if counter exits max number of positions
     {
-        return -1; // exit with error
+        //return -1; // exit with error
     }
     else // else if not exceeding max we insert item
     {
-        if (obs.pos_count == 0) // if first item we insert
+        if (obs_ref->pos_count == 0) // if first item we insert
         {
-            obs.positions[0].next_pos = &obs.positions[0];
-            obs.positions[0].previous_pos = &obs.positions[0];
-            obs.head_pos = &obs.positions[0];
-            obs.tail_pos = &obs.positions[0];
+            obs_ref->positions[0].next_pos = &(obs_ref->positions[0]);
+            obs_ref->positions[0].previous_pos = &obs_ref->positions[0];
+            obs_ref->head_pos = &obs_ref->positions[0];
+            obs_ref->tail_pos = &obs_ref->positions[0];
+
+
         }
         else // else if not first item we insert
         {
+            obs_ref->positions[obs_ref->pos_write_index].next_pos = obs_ref->positions[j].next_pos;
+            obs_ref->positions[j].next_pos = &obs_ref->positions[obs_ref->pos_write_index];
+            obs_ref->positions[j].next_pos->previous_pos = &obs_ref->positions[obs_ref->pos_write_index];
+            obs_ref->positions[obs_ref->pos_write_index].previous_pos = &obs_ref->positions[j];
 
-            obs.positions[obs.pos_count-1].next_pos = &obs.positions[obs.pos_count];
-            obs.positions[obs.pos_count].previous_pos = &obs.positions[obs.pos_count-1];
-            obs.positions[obs.pos_count].next_pos = &obs.positions[0];
-            obs.tail_pos = &obs.positions[obs.pos_count];
+            obs_ref->tail_pos = &obs_ref->positions[obs_ref->pos_write_index];
         }
 
         // then write data and increment position counter
-        obs.positions[obs.pos_count].x_pos = x_pos;
-        obs.positions[obs.pos_count].y_pos = y_pos;
-        obs.positions[obs.pos_count].draw_done = 0;
-        obs.pos_count++;
+        obs_ref->positions[obs_ref->pos_write_index].x_pos = x_pos;
+        obs_ref->positions[obs_ref->pos_write_index].y_pos = y_pos;
+        obs_ref->positions[obs_ref->pos_write_index].draw_done = 0;
+        obs_ref->pos_count++;
+        obs_ref->pos_write_index++;
+        if (obs_ref->pos_write_index >= 10)
+            obs_ref->pos_write_index = 0;
     }
 
 }
@@ -181,10 +279,11 @@ void Character_AddPosition(uint16_t x_pos, uint16_t y_pos)
         }
         else // else if not first item we insert
         {
-
+            frog.positions[frog.pos_count].next_pos = frog.positions[frog.pos_count-1].next_pos;
             frog.positions[frog.pos_count-1].next_pos = &frog.positions[frog.pos_count];
+            frog.positions[frog.pos_count-1].next_pos->previous_pos = &frog.positions[frog.pos_count];
             frog.positions[frog.pos_count].previous_pos = &frog.positions[frog.pos_count-1];
-            frog.positions[frog.pos_count].next_pos = &frog.positions[0];
+
             frog.tail_pos = &frog.positions[frog.pos_count];
         }
 
@@ -319,12 +418,46 @@ void Game_Thread(void) {
             {
                 obs.partial = obs.partial - 2;
             }
-            Obstacle_AddPosition(x_pos, y_pos);
+            Obstacle_AddPosition(x_pos, y_pos, &obs);
         }
         else
         {
-            Obstacle_AddPosition(0, 20);
+            Obstacle_AddPosition(0, 20, &obs);
             obs.partial = 40;
+        }
+
+        // Obstacle2 move
+        if (obs2.tail_pos->x_pos < 238)
+        {
+            uint16_t x_pos = obs2.tail_pos->x_pos+4;
+            uint16_t y_pos = obs2.tail_pos->y_pos;
+            if (obs2.tail_pos->x_pos > 200)
+            {
+                obs2.partial = obs.partial - 4;
+            }
+            Obstacle_AddPosition(x_pos, y_pos, &obs2);
+        }
+        else
+        {
+            Obstacle_AddPosition(0, 60, &obs2);
+            obs2.partial = 40;
+        }
+
+        // Obstacle3 move
+        if (obs3.tail_pos->x_pos < 239)
+        {
+            uint16_t x_pos = obs3.tail_pos->x_pos+1;
+            uint16_t y_pos = obs3.tail_pos->y_pos;
+            if (obs3.tail_pos->x_pos > 200)
+            {
+                obs3.partial = obs3.partial - 2;
+            }
+            Obstacle_AddPosition(x_pos, y_pos, &obs3);
+        }
+        else
+        {
+            Obstacle_AddPosition(0, 100, &obs3);
+            obs3.partial = 40;
         }
 
 
@@ -369,6 +502,28 @@ void Game_Thread(void) {
         // check collision
         x_diff = frog.tail_pos->x_pos - obs.tail_pos->x_pos;
         y_diff = frog.tail_pos->y_pos - obs.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+        // check collision 2
+        x_diff = frog.tail_pos->x_pos - obs2.tail_pos->x_pos;
+        y_diff = frog.tail_pos->y_pos - obs2.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+        // check collision 3
+        x_diff = frog.tail_pos->x_pos - obs3.tail_pos->x_pos;
+        y_diff = frog.tail_pos->y_pos - obs3.tail_pos->y_pos;
         if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
         {
             UARTprintf("YOU LOST!!\n");

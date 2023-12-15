@@ -40,6 +40,7 @@ typedef struct position_t
     uint16_t y_pos;
     bool     draw_done;
     bool     not_empty;
+
     struct position_t *next_pos;
     struct position_t *previous_pos;
 } position_t;
@@ -63,13 +64,15 @@ typedef struct character_t
 // Obstacle
 typedef struct obstacle_t
 {
-    struct position_t positions[MAX_NUM_POS];
+    struct position_t positions[10];
     struct position_t *head_pos;
     struct position_t *tail_pos;
     uint16_t pos_count;
     uint8_t width;
     uint8_t length;
     uint8_t partial;
+    uint8_t pos_read_index;
+    uint8_t pos_write_index;
 
 } obstacle_t;
 
@@ -83,6 +86,8 @@ typedef struct board_t
 uint8_t board[13][12]; // we could initialize this in main?
 character_t frog;
 obstacle_t obs;
+obstacle_t obs2;
+obstacle_t obs3;
 
 /***********************************Structures**************************************/
 
@@ -118,7 +123,6 @@ void GPIOD_Handler(void);
 /****** Functions ******/
 void InitWorld(void);
 void Character_AddPosition(uint16_t x_pos, uint16_t y_pos);
-void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos);
-
+void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos, struct obstacle_t *obs_add);
 #endif /* THREADS_H_ */
 
