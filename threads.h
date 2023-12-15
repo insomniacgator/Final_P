@@ -30,6 +30,7 @@ semaphore_t sem_PCA9555_Debounce;
 semaphore_t sem_Joystick_Debounce;
 semaphore_t sem_KillCube;
 semaphore_t sem_UART;
+semaphore_t sem_attached;
 
 /***********************************Semaphores**************************************/
 
@@ -92,6 +93,10 @@ obstacle_t obs3;
 obstacle_t obs4;
 obstacle_t obs5;
 obstacle_t wood;
+obstacle_t wood2;
+obstacle_t wood3;
+obstacle_t wood4;
+obstacle_t wood5;
 
 /***********************************Structures**************************************/
 

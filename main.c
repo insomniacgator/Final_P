@@ -95,6 +95,42 @@ int main(void)
     y_pos = 140;
     Obstacle_AddPosition(x_pos, y_pos, &wood);
 
+    wood2.length = 20;
+    wood2.width = 80;
+    wood2.pos_count = 0;
+    wood2.partial = wood2.width;
+    wood2.pos_write_index, wood2.pos_read_index = 0;
+    x_pos = 0;
+    y_pos = 200;
+    Obstacle_AddPosition(x_pos, y_pos, &wood2);
+
+    wood3.length = 20;
+    wood3.width = 80;
+    wood3.pos_count = 0;
+    wood3.partial = wood3.width;
+    wood3.pos_write_index, wood3.pos_read_index = 0;
+    x_pos = 160;
+    y_pos = 160;
+    Obstacle_AddPosition(x_pos, y_pos, &wood3);
+
+    wood4.length = 20;
+    wood4.width = 60;
+    wood4.pos_count = 0;
+    wood4.partial = wood4.width;
+    wood4.pos_write_index, wood4.pos_read_index = 0;
+    x_pos = 140;
+    y_pos = 180;
+    Obstacle_AddPosition(x_pos, y_pos, &wood4);
+
+    wood5.length = 20;
+    wood5.width = 80;
+    wood5.pos_count = 0;
+    wood5.partial = wood5.width;
+    wood5.pos_write_index, wood5.pos_read_index = 0;
+    x_pos = 160;
+    y_pos = 220;
+    Obstacle_AddPosition(x_pos, y_pos, &wood5);
+
     // Sets clock speed to 80 MHz. You'll need it!
 
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
@@ -106,17 +142,18 @@ int main(void)
     G8RTOS_InitSemaphore(&sem_SPIA, 1);
     G8RTOS_InitSemaphore(&sem_PCA9555_Debounce, 0);
     G8RTOS_InitSemaphore(&sem_Joystick_Debounce, 0);
-    G8RTOS_InitSemaphore(&sem_KillCube, 1);
+    //G8RTOS_InitSemaphore(&sem_KillCube, 1);
+    G8RTOS_InitSemaphore(&sem_attached, 1);
 
     G8RTOS_InitFIFO(SPAWNCOOR_FIFO);
     G8RTOS_InitFIFO(JOYSTICK_FIFO);
-    G8RTOS_InitFIFO(CHAR_POS_FIFO);
+    //G8RTOS_InitFIFO(CHAR_POS_FIFO);
 
 
     G8RTOS_AddThread(Idle_Thread, 255, "idle\0");
     G8RTOS_AddThread(check_win_lose, 253, "check_win_lose\0");
-    G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
-    G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
+    //G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
+    //G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
     G8RTOS_AddThread(Game_Thread, 4, "game_thread\0");
     //G8RTOS_AddThread(LED_Thread, 254, "threads\0");
     

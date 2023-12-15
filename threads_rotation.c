@@ -79,7 +79,8 @@ void Draw_Display(void)
         {
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_DrawRectangle(x_pos, y_pos, frog.width, frog.length, ST7789_WHITE);
-            ST7789_DrawRectangle(x_oldpos, y_oldpos, frog.width, frog.length, ST7789_BLACK);
+            if (frog.pos_count > 1)
+                ST7789_DrawRectangle(x_oldpos, y_oldpos, frog.width, frog.length, ST7789_BLACK);
             //ST7789_DrawRectangle(frog.x_pos, frog.y_pos, frog.width, frog.length, ST7789_WHITE);
             G8RTOS_SignalSemaphore(&sem_SPIA);
             //frog.x_pos = x_pos;
@@ -327,6 +328,167 @@ void Draw_Display(void)
             wood.tail_pos->draw_done = 1;
         }
 
+        // wood 2 Draw
+        x_pos = wood2.tail_pos->x_pos;
+        y_pos = wood2.tail_pos->y_pos;
+        x_oldpos = wood2.tail_pos->previous_pos->x_pos;
+        y_oldpos = wood2.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !wood2.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos >= 200)
+            {
+                if (1)//(obs2.partial >= 4)
+                {
+                    //obs.partial = obs.partial - 2;
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs2.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, wood2.partial, wood2.length, ST7789_BROWN);
+                    ST7789_DrawRectangle(x_pos-2, y_pos, 4, wood2.length, ST7789_BLUE);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, wood2.width, wood2.length, ST7789_BROWN);
+                ST7789_DrawRectangle(x_pos-2, y_pos, 4, wood2.length, ST7789_BLUE);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            wood2.tail_pos->draw_done = 1;
+        }
+
+
+        // Wood 3 Draw
+        x_pos = wood3.tail_pos->x_pos;
+        y_pos = wood3.tail_pos->y_pos;
+        x_oldpos = wood3.tail_pos->previous_pos->x_pos;
+        y_oldpos = wood3.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !wood3.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos <= 2)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", wood3.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, wood3.partial, wood3.length, ST7789_BROWN);
+                    ST7789_DrawRectangle(x_pos+wood3.partial, y_pos, 12, wood3.length, ST7789_BLUE);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, wood3.width, wood3.length, ST7789_BROWN);
+                ST7789_DrawRectangle(x_pos+wood3.width-2, y_pos, 12, wood3.length, ST7789_BLUE);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            wood3.tail_pos->draw_done = 1;
+        }
+
+        // Wood 4 Draw
+        x_pos = wood4.tail_pos->x_pos;
+        y_pos = wood4.tail_pos->y_pos;
+        x_oldpos = wood4.tail_pos->previous_pos->x_pos;
+        y_oldpos = wood4.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !wood4.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos <= 2)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", wood4.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, wood4.partial, wood4.length, ST7789_BROWN);
+                    ST7789_DrawRectangle(x_pos+wood4.partial, y_pos, 12, wood4.length, ST7789_BLUE);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, wood4.width, wood4.length, ST7789_BROWN);
+                ST7789_DrawRectangle(x_pos+wood4.width-2, y_pos, 12, wood4.length, ST7789_BLUE);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            wood4.tail_pos->draw_done = 1;
+        }
+
+
+        // Wood 5 Draw
+        x_pos = wood5.tail_pos->x_pos;
+        y_pos = wood5.tail_pos->y_pos;
+        x_oldpos = wood5.tail_pos->previous_pos->x_pos;
+        y_oldpos = wood5.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !wood5.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos <= 2)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", wood5.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, wood5.partial, wood5.length, ST7789_BROWN);
+                    ST7789_DrawRectangle(x_pos+wood5.partial, y_pos, 12, wood5.length, ST7789_BLUE);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, wood5.width, wood5.length, ST7789_BROWN);
+                ST7789_DrawRectangle(x_pos+wood5.width-2, y_pos, 12, wood5.length, ST7789_BLUE);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            wood5.tail_pos->draw_done = 1;
+        }
 
     }
 
@@ -645,12 +807,13 @@ void Game_Thread(void) {
         else
         {
             Obstacle_AddPosition(0, 140, &wood);
-            wood.partial = 40;
+            wood.partial = 60;
         }
 
         // check if frog attached
-        uint16_t x_diff = frog.tail_pos->x_pos - wood.tail_pos->x_pos;
-        uint16_t y_diff = frog.tail_pos->y_pos - wood.tail_pos->y_pos;
+        int16_t x_diff = frog.tail_pos->x_pos - wood.tail_pos->x_pos;
+        int16_t y_diff = frog.tail_pos->y_pos - wood.tail_pos->y_pos;
+        /*
         if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
         {
 
@@ -661,8 +824,163 @@ void Game_Thread(void) {
         else
         {
             frog.attached = 0;
+        }*/
+
+        // wood2 move
+        if (wood2.tail_pos->x_pos < 238)
+        {
+            uint16_t x_pos = wood2.tail_pos->x_pos+2;
+            uint16_t y_pos = wood2.tail_pos->y_pos;
+            if (frog.attached == 2)
+            {
+                uint16_t x_pos_frog = frog.tail_pos->x_pos+2;
+                uint16_t y_pos_frog = frog.tail_pos->y_pos;
+                Character_AddPosition(x_pos_frog, y_pos_frog);
+            }
+            if (wood2.tail_pos->x_pos > 200)
+            {
+                wood2.partial = wood2.partial - 2;
+            }
+            Obstacle_AddPosition(x_pos, y_pos, &wood2);
+        }
+        else
+        {
+            Obstacle_AddPosition(0, 200, &wood2);
+            wood2.partial = 80;
         }
 
+        // check if frog attached
+        int16_t x_diff2 = frog.tail_pos->x_pos - wood2.tail_pos->x_pos;
+        int16_t y_diff2 = frog.tail_pos->y_pos - wood2.tail_pos->y_pos;
+
+
+        // wood3 move
+        if (wood3.tail_pos->x_pos > 2)
+        {
+            uint16_t x_pos = wood3.tail_pos->x_pos-2;
+            uint16_t y_pos = wood3.tail_pos->y_pos;
+
+            Obstacle_AddPosition(x_pos, y_pos, &wood3);
+        }
+        else //if (obs4.tail_pos->x_pos < 4)
+        {
+
+            if (wood3.partial >= 2)
+            {
+                wood3.partial = wood3.partial - 2;
+                Obstacle_AddPosition(0, 160, &wood3);
+            }
+            else
+            {
+                Obstacle_AddPosition(160, 160, &wood3);
+                wood3.partial = 80;
+            }
+        }
+
+        // check if frog attached
+        int16_t x_diff3 = frog.tail_pos->x_pos - wood3.tail_pos->x_pos;
+        int16_t y_diff3 = frog.tail_pos->y_pos - wood3.tail_pos->y_pos;
+
+        // wood4 move
+                if (wood4.tail_pos->x_pos > 2)
+                {
+                    uint16_t x_pos = wood4.tail_pos->x_pos-2;
+                    uint16_t y_pos = wood4.tail_pos->y_pos;
+
+                    Obstacle_AddPosition(x_pos, y_pos, &wood4);
+                }
+                else //if (obs4.tail_pos->x_pos < 4)
+                {
+
+                    if (wood4.partial >= 2)
+                    {
+                        wood4.partial = wood4.partial - 2;
+                        Obstacle_AddPosition(0, 180, &wood4);
+                    }
+                    else
+                    {
+                        Obstacle_AddPosition(180, 180, &wood4);
+                        wood4.partial = 80;
+                    }
+                }
+
+                // check if frog attached
+                int16_t x_diff4 = frog.tail_pos->x_pos - wood4.tail_pos->x_pos;
+                int16_t y_diff4 = frog.tail_pos->y_pos - wood4.tail_pos->y_pos;
+
+        // wood5 move
+        if (wood5.tail_pos->x_pos > 3)
+        {
+            uint16_t x_pos = wood5.tail_pos->x_pos-3;
+            uint16_t y_pos = wood5.tail_pos->y_pos;
+
+            Obstacle_AddPosition(x_pos, y_pos, &wood5);
+        }
+        else //if (obs4.tail_pos->x_pos < 4)
+        {
+
+            if (wood5.partial >= 3)
+            {
+                wood5.partial = wood3.partial - 3;
+                Obstacle_AddPosition(0, 220, &wood5);
+            }
+            else
+            {
+                Obstacle_AddPosition(160, 220, &wood5);
+                wood5.partial = 80;
+            }
+        }
+
+        // check if frog attached
+        int16_t x_diff5 = frog.tail_pos->x_pos - wood5.tail_pos->x_pos;
+        int16_t y_diff5 = frog.tail_pos->y_pos - wood5.tail_pos->y_pos;
+
+
+        if (x_diff >= -20 && x_diff < 60 && y_diff >= 0 && y_diff < 20)
+        {
+
+            UARTprintf("Attached to wood 1\n");
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 1;
+            G8RTOS_SignalSemaphore(&sem_attached);
+
+        }
+        else if (x_diff2 >= -20 && x_diff2 < 80 && y_diff2 >= 0 && y_diff2 < 20)
+        {
+
+            UARTprintf("Attached to wood 2\n");
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 2;
+            G8RTOS_SignalSemaphore(&sem_attached);
+
+        }
+        else if (x_diff3 >= -20 && x_diff3 < 100 && y_diff3 >= 0 && y_diff3 < 20)
+        {
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 3;
+            G8RTOS_SignalSemaphore(&sem_attached);
+            UARTprintf("Attached to wood 3\n");
+        }
+        else if (x_diff4 >= -20 && x_diff4 < 100 && y_diff4 >= 0 && y_diff4 < 20)
+        {
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 4;
+            G8RTOS_SignalSemaphore(&sem_attached);
+            UARTprintf("Attached to wood 4\n");
+        }
+        else if (x_diff5 >= -20 && x_diff5 < 100 && y_diff5 >= 0 && y_diff5 < 20)
+        {
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 5;
+            G8RTOS_SignalSemaphore(&sem_attached);
+            UARTprintf("Attached to wood 5\n");
+        }
+        else
+        {
+            G8RTOS_WaitSemaphore(&sem_attached);
+            frog.attached = 0;
+            G8RTOS_SignalSemaphore(&sem_attached);
+        }
 
         // sleep
         sleep(50);
@@ -794,9 +1112,12 @@ void check_win_lose(void)
             G8RTOS_SignalSemaphore(&sem_SPIA);
         }
 
+        G8RTOS_WaitSemaphore(&sem_attached);
+        uint8_t attached = frog.attached;
+        G8RTOS_SignalSemaphore(&sem_attached);
 
         // check if on water
-        if ((frog.tail_pos->y_pos >= 140 && frog.tail_pos->x_pos <= 240) && !frog.attached)
+        if ((frog.tail_pos->y_pos >= 140 && frog.tail_pos->x_pos <= 240) && (attached == 0))
         {
 
             G8RTOS_KillThread(2);
