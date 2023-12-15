@@ -57,6 +57,7 @@ typedef struct character_t
     uint16_t pos_count;
     uint8_t width;
     uint8_t length;
+    uint8_t attached;
 
 } character_t; // should I make a linked list of the positions, or add a var
                // for the old position, so that I have the old position to erase?
@@ -88,6 +89,9 @@ character_t frog;
 obstacle_t obs;
 obstacle_t obs2;
 obstacle_t obs3;
+obstacle_t obs4;
+obstacle_t obs5;
+obstacle_t wood;
 
 /***********************************Structures**************************************/
 
@@ -103,6 +107,7 @@ void Read_JoystickPress(void);
 void LED_Thread(void);
 
 void Game_Thread(void);
+void check_win_lose(void);
 /*******************************Background Threads**********************************/
 
 /********************************Periodic Threads***********************************/
@@ -110,6 +115,7 @@ void Game_Thread(void);
 void Print_WorldCoords(void);
 void Get_Joystick(void);
 void Draw_Display(void);
+
 
 /********************************Periodic Threads***********************************/
 

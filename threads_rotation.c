@@ -104,9 +104,9 @@ void Draw_Display(void)
                 if (obs.partial >= 2)
                 {
                     //obs.partial = obs.partial - 2;
-                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs.partial, x_pos, y_pos);
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs.partial, x_pos, y_pos);
                     G8RTOS_WaitSemaphore(&sem_SPIA);
-                    ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_YELLOW);
                     ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
                     G8RTOS_SignalSemaphore(&sem_SPIA);
                 }
@@ -119,7 +119,7 @@ void Draw_Display(void)
             else
             {
                 G8RTOS_WaitSemaphore(&sem_SPIA);
-                ST7789_DrawRectangle(x_pos, y_pos, obs.width, obs.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos, y_pos, obs.width, obs.length, ST7789_YELLOW);
                 ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
                 G8RTOS_SignalSemaphore(&sem_SPIA);
             }
@@ -144,9 +144,9 @@ void Draw_Display(void)
                 if (1)//(obs2.partial >= 4)
                 {
                     //obs.partial = obs.partial - 2;
-                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs2.partial, x_pos, y_pos);
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs2.partial, x_pos, y_pos);
                     G8RTOS_WaitSemaphore(&sem_SPIA);
-                    ST7789_DrawRectangle(x_pos, y_pos, obs2.partial, obs2.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs2.partial, obs2.length, ST7789_YELLOW);
                     ST7789_DrawRectangle(x_pos-4, y_pos, 8, obs2.length, ST7789_BLACK);
                     G8RTOS_SignalSemaphore(&sem_SPIA);
                 }
@@ -159,7 +159,7 @@ void Draw_Display(void)
             else
             {
                 G8RTOS_WaitSemaphore(&sem_SPIA);
-                ST7789_DrawRectangle(x_pos, y_pos, obs2.width, obs2.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos, y_pos, obs2.width, obs2.length, ST7789_YELLOW);
                 ST7789_DrawRectangle(x_pos-4, y_pos, 8, obs2.length, ST7789_BLACK);
                 G8RTOS_SignalSemaphore(&sem_SPIA);
             }
@@ -184,9 +184,9 @@ void Draw_Display(void)
                 if (1)
                 {
                     //obs.partial = obs.partial - 2;
-                    UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs3.partial, x_pos, y_pos);
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs3.partial, x_pos, y_pos);
                     G8RTOS_WaitSemaphore(&sem_SPIA);
-                    ST7789_DrawRectangle(x_pos, y_pos, obs3.partial, obs3.length, ST7789_WHITE);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs3.partial, obs3.length, ST7789_YELLOW);
                     ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs3.length, ST7789_BLACK);
                     G8RTOS_SignalSemaphore(&sem_SPIA);
                 }
@@ -199,7 +199,7 @@ void Draw_Display(void)
             else
             {
                 G8RTOS_WaitSemaphore(&sem_SPIA);
-                ST7789_DrawRectangle(x_pos, y_pos, obs3.width, obs3.length, ST7789_WHITE);
+                ST7789_DrawRectangle(x_pos, y_pos, obs3.width, obs3.length, ST7789_YELLOW);
                 ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs3.length, ST7789_BLACK);
                 G8RTOS_SignalSemaphore(&sem_SPIA);
             }
@@ -207,6 +207,125 @@ void Draw_Display(void)
             obs3.tail_pos->draw_done = 1;
         }
 
+        // Vehicle 4 Draw
+        x_pos = obs4.tail_pos->x_pos;
+        y_pos = obs4.tail_pos->y_pos;
+        x_oldpos = obs4.tail_pos->previous_pos->x_pos;
+        y_oldpos = obs4.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !obs4.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos <= 2)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs4.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs4.partial, obs4.length, ST7789_ORANGE);
+                    ST7789_DrawRectangle(x_pos+obs4.partial, y_pos, 10, obs4.length, ST7789_BLACK);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, obs4.width, obs4.length, ST7789_ORANGE);
+                ST7789_DrawRectangle(x_pos+obs4.width, y_pos, 4, obs4.length, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            obs4.tail_pos->draw_done = 1;
+        }
+
+        // Vehicle 5 Draw
+        x_pos = obs5.tail_pos->x_pos;
+        y_pos = obs5.tail_pos->y_pos;
+        x_oldpos = obs5.tail_pos->previous_pos->x_pos;
+        y_oldpos = obs5.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !obs5.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos <= 2)
+            {
+                if (1)
+                {
+                    //obs.partial = obs.partial - 2;
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs5.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, obs5.partial, obs5.length, ST7789_ORANGE);
+                    ST7789_DrawRectangle(x_pos+obs5.partial, y_pos, 12, obs5.length, ST7789_BLACK);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, obs5.width, obs5.length, ST7789_ORANGE);
+                ST7789_DrawRectangle(x_pos+obs5.width-2, y_pos, 12, obs5.length, ST7789_BLACK);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            obs5.tail_pos->draw_done = 1;
+        }
+
+        // wood 1 Draw
+        x_pos = wood.tail_pos->x_pos;
+        y_pos = wood.tail_pos->y_pos;
+        x_oldpos = wood.tail_pos->previous_pos->x_pos;
+        y_oldpos = wood.tail_pos->previous_pos->y_pos;
+        //obs.pos_read_index++;
+
+        if ((x_pos || y_pos) && !wood.tail_pos->draw_done)
+        {
+
+
+            // if we reached wall we have to start disappearing
+            if (x_pos >= 200)
+            {
+                if (1)//(obs2.partial >= 4)
+                {
+                    //obs.partial = obs.partial - 2;
+                    //UARTprintf("partial %d, x_pos: %d, y_pos: %d\n", obs2.partial, x_pos, y_pos);
+                    G8RTOS_WaitSemaphore(&sem_SPIA);
+                    ST7789_DrawRectangle(x_pos, y_pos, wood.partial, wood.length, ST7789_BROWN);
+                    ST7789_DrawRectangle(x_pos-4, y_pos, 8, wood.length, ST7789_BLUE);
+                    G8RTOS_SignalSemaphore(&sem_SPIA);
+                }
+                else
+                {
+                    //obs.partial = 0;
+                    //Obstacle_AddPosition(0, 20);
+                }
+            }
+            else
+            {
+                G8RTOS_WaitSemaphore(&sem_SPIA);
+                ST7789_DrawRectangle(x_pos, y_pos, wood.width, wood.length, ST7789_BROWN);
+                ST7789_DrawRectangle(x_pos-4, y_pos, 8, wood.length, ST7789_BLUE);
+                G8RTOS_SignalSemaphore(&sem_SPIA);
+            }
+
+            wood.tail_pos->draw_done = 1;
+        }
 
 
     }
@@ -224,7 +343,7 @@ void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos, struct obstacle_t *obs
         j = obs_ref->pos_write_index - 1;
 
     // this needs to be number of positions and not pos_count, hence commented below
-    if (obs_ref->pos_count >= 10000) // if counter exits max number of positions
+    if (obs_ref->pos_count >= 1000000) // if counter exits max number of positions
     {
         //return -1; // exit with error
     }
@@ -460,12 +579,109 @@ void Game_Thread(void) {
             obs3.partial = 40;
         }
 
+        // Obstacle4 move
+        if (obs4.tail_pos->x_pos > 2)
+        {
+            uint16_t x_pos = obs4.tail_pos->x_pos-2;
+            uint16_t y_pos = obs4.tail_pos->y_pos;
 
+            Obstacle_AddPosition(x_pos, y_pos, &obs4);
+        }
+        else //if (obs4.tail_pos->x_pos < 4)
+        {
+
+            if (obs4.partial >= 2)
+            {
+                obs4.partial = obs4.partial - 2;
+                Obstacle_AddPosition(0, 40, &obs4);
+            }
+            else
+            {
+                Obstacle_AddPosition(200, 40, &obs4);
+                obs4.partial = 40;
+            }
+        }
+
+        // Obstacle5 move
+        if (obs5.tail_pos->x_pos > 4)
+        {
+            uint16_t x_pos = obs5.tail_pos->x_pos-4;
+            uint16_t y_pos = obs5.tail_pos->y_pos;
+
+            Obstacle_AddPosition(x_pos, y_pos, &obs5);
+        }
+        else //if (obs4.tail_pos->x_pos < 4)
+        {
+
+            if (obs5.partial >= 4)
+            {
+                obs5.partial = obs5.partial - 4;
+                Obstacle_AddPosition(0, 80, &obs5);
+            }
+            else
+            {
+                Obstacle_AddPosition(200, 80, &obs5);
+                obs5.partial = 40;
+            }
+        }
+
+        // wood1 move
+        if (wood.tail_pos->x_pos < 238)
+        {
+            uint16_t x_pos = wood.tail_pos->x_pos+4;
+            uint16_t y_pos = wood.tail_pos->y_pos;
+            if (frog.attached == 1)
+            {
+                uint16_t x_pos_frog = frog.tail_pos->x_pos+4;
+                uint16_t y_pos_frog = frog.tail_pos->y_pos;
+                Character_AddPosition(x_pos_frog, y_pos_frog);
+            }
+            if (wood.tail_pos->x_pos > 200)
+            {
+                wood.partial = wood.partial - 4;
+            }
+            Obstacle_AddPosition(x_pos, y_pos, &wood);
+        }
+        else
+        {
+            Obstacle_AddPosition(0, 140, &wood);
+            wood.partial = 40;
+        }
+
+        // check if frog attached
+        uint16_t x_diff = frog.tail_pos->x_pos - wood.tail_pos->x_pos;
+        uint16_t y_diff = frog.tail_pos->y_pos - wood.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+
+            UARTprintf("Attached to wood 1\n");
+            frog.attached = 1;
+
+        }
+        else
+        {
+            frog.attached = 0;
+        }
+
+
+        // sleep
+        sleep(50);
+    }
+}
+
+
+void check_win_lose(void)
+{
+    while(1)
+    {
         // check win
         int16_t x_diff = frog.tail_pos->x_pos - 20;
         int16_t y_diff = frog.tail_pos->y_pos - 240;
         if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
         {
+            G8RTOS_KillThread(2);
+            G8RTOS_KillThread(3);
+            G8RTOS_KillThread(4);
             UARTprintf("YOU WON!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(ST7789_GREEN);
@@ -475,6 +691,9 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - 240;
         if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU WON!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(ST7789_GREEN);
@@ -484,6 +703,9 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - 240;
         if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU WON!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(ST7789_GREEN);
@@ -493,6 +715,9 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - 240;
         if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU WON!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(ST7789_GREEN);
@@ -504,6 +729,9 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - obs.tail_pos->y_pos;
         if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU LOST!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(0x001F);
@@ -515,6 +743,9 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - obs2.tail_pos->y_pos;
         if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU LOST!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(0x001F);
@@ -526,6 +757,37 @@ void Game_Thread(void) {
         y_diff = frog.tail_pos->y_pos - obs3.tail_pos->y_pos;
         if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
         {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+        // check collision 4
+        x_diff = frog.tail_pos->x_pos - obs4.tail_pos->x_pos;
+        y_diff = frog.tail_pos->y_pos - obs4.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+        // check collision 5
+        x_diff = frog.tail_pos->x_pos - obs5.tail_pos->x_pos;
+        y_diff = frog.tail_pos->y_pos - obs5.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+            G8RTOS_KillThread(2);
+                        G8RTOS_KillThread(3);
+                        G8RTOS_KillThread(4);
             UARTprintf("YOU LOST!!\n");
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_Fill(0x001F);
@@ -534,15 +796,20 @@ void Game_Thread(void) {
 
 
         // check if on water
+        if ((frog.tail_pos->y_pos >= 140 && frog.tail_pos->x_pos <= 240) && !frog.attached)
+        {
 
-
-
-        // sleep
-        sleep(50);
+            G8RTOS_KillThread(2);
+            G8RTOS_KillThread(3);
+            G8RTOS_KillThread(4);
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
     }
+    sleep(50);
 }
-
-
 
 
 void Read_Buttons() {

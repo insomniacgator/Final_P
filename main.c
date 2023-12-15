@@ -68,6 +68,33 @@ int main(void)
     y_pos = 100;
     Obstacle_AddPosition(x_pos, y_pos, &obs3); // modify obstacle_addposition to include obs param
 
+    obs4.length = 20;
+    obs4.width = 40;
+    obs4.pos_count = 0;
+    obs4.partial = obs4.width;
+    obs4.pos_write_index, obs4.pos_read_index = 0;
+    x_pos = 200;
+    y_pos = 40;
+    Obstacle_AddPosition(x_pos, y_pos, &obs4);
+
+    obs5.length = 20;
+    obs5.width = 40;
+    obs5.pos_count = 0;
+    obs5.partial = obs5.width;
+    obs5.pos_write_index, obs5.pos_read_index = 0;
+    x_pos = 200;
+    y_pos = 80;
+    Obstacle_AddPosition(x_pos, y_pos, &obs5);
+
+    wood.length = 20;
+    wood.width = 60;
+    wood.pos_count = 0;
+    wood.partial = wood.width;
+    wood.pos_write_index, wood.pos_read_index = 0;
+    x_pos = 0;
+    y_pos = 140;
+    Obstacle_AddPosition(x_pos, y_pos, &wood);
+
     // Sets clock speed to 80 MHz. You'll need it!
 
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
@@ -87,7 +114,7 @@ int main(void)
 
 
     G8RTOS_AddThread(Idle_Thread, 255, "idle\0");
-    //G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
+    G8RTOS_AddThread(check_win_lose, 253, "check_win_lose\0");
     G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
     G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
     G8RTOS_AddThread(Game_Thread, 4, "game_thread\0");
