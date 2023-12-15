@@ -16,6 +16,7 @@
 
 #define SPAWNCOOR_FIFO      0
 #define JOYSTICK_FIFO       1
+#define CHAR_POS_FIFO       2
 
 #define MAX_NUM_POS         100
 
@@ -33,13 +34,26 @@ semaphore_t sem_UART;
 /***********************************Semaphores**************************************/
 
 /***********************************Structures**************************************/
+typedef struct position_t
+{
+    uint16_t x_pos;
+    uint16_t y_pos;
+    bool     draw_done;
+    bool     not_empty;
+    struct position_t *next_pos;
+    struct position_t *previous_pos;
+} position_t;
+
 
 // Character
 typedef struct character_t
 {
+    //uint16_t x_pos;
+    //uint16_t y_pos;
     struct position_t positions[MAX_NUM_POS];
-    struct positon_t *head_pos;
+    struct position_t *head_pos;
     struct position_t *tail_pos;
+    uint16_t pos_count;
     uint8_t width;
     uint8_t length;
 
@@ -50,22 +64,23 @@ typedef struct character_t
 typedef struct obstacle_t
 {
     struct position_t positions[MAX_NUM_POS];
-    struct positon_t *head_pos;
+    struct position_t *head_pos;
     struct position_t *tail_pos;
+    uint16_t pos_count;
     uint8_t width;
     uint8_t length;
+    uint8_t partial;
 
 } obstacle_t;
 
-typedef struct position_t
+// Board
+/*
+typedef struct board_t
 {
-    uint16_t x_pos;
-    uint16_t y_pos;
-    struct position_t *next_pos;
-    struct position_t *previous_pos;
-};
+    uint8_t grid[13][12];
+};*/
 
-
+uint8_t board[13][12]; // we could initialize this in main?
 character_t frog;
 obstacle_t obs;
 
@@ -82,7 +97,7 @@ void Read_JoystickPress(void);
 
 void LED_Thread(void);
 
-void CharacterMove_Thread(void);
+void Game_Thread(void);
 /*******************************Background Threads**********************************/
 
 /********************************Periodic Threads***********************************/
@@ -99,7 +114,10 @@ void GPIOE_Handler(void);
 void GPIOD_Handler(void);
 
 /*******************************Aperiodic Threads***********************************/
+
+/****** Functions ******/
 void InitWorld(void);
+void Character_AddPosition(uint16_t x_pos, uint16_t y_pos);
 
 #endif /* THREADS_H_ */
 

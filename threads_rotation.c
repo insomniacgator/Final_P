@@ -58,134 +58,162 @@ void Idle_Thread(void) {
     while(1);
 }
 
-void CamMove_Thread(void) {
-    uint32_t result;
-    int16_t joystickX;
-    int16_t joystickY;
-    float joystickX_norm;
-    float joystickY_norm;
 
-    world_camera_pos.x = 0;
-    world_camera_pos.y = 0;
-    world_camera_pos.z = 60;
-
-
-    Quat_t rot_quat, temp, joystick_temp;
-
-    float cr, sr, cp, sp, cy, sy;
-    float mag;
-
-    float euler_x, euler_y, euler_z;
-
-
-    while(1) {
-        result = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
-
-        joystickX = ((result >> 0) & 0xFFFF);
-        joystickY = ((result >> 16) & 0xFFFF);
-
-        // Normalizing the joystick values [-1, 1]
-        if (1900 < joystickX && joystickX < 2100) {
-            joystickX = 0;
-            joystickX_norm = 0.0;
-        } else {
-            joystickX_norm = ((2.0 * (float)joystickX) / 4096.0) - 1.0;
-        }
-
-        if (1900 < joystickY && joystickY < 2100) {
-            joystickY = 0;
-            joystickY_norm = 0.0;
-        } else {
-            joystickY_norm = ((2.0 * (float)joystickY) / 4096.0) - 1.0;
-        }
-
-        if (move_or_rot) {
-            joystick_temp.w = 0;
-            joystick_temp.x = -joystickX_norm;
-
-
-            if (joystick_y) {
-                joystick_temp.y = joystickY_norm;
-                joystick_temp.z = 0;
-            } else {
-                joystick_temp.y = 0;
-                joystick_temp.z = -joystickY_norm;
-            }
-
-            getRotatedQuat(&temp, &joystick_temp, &world_view_rot);
-
-            world_camera_pos.x += temp.x;
-            world_camera_pos.y += temp.y;
-            world_camera_pos.z += temp.z;
-
-        } else {
-
-            euler_y += joystickY_norm;
-
-            if (joystick_y) {
-                euler_z += joystickX_norm;
-            } else {
-                euler_x += joystickX_norm;
-            }
-
-            cp = cosf(euler_x * 0.5);
-            sp = sinf(euler_x * 0.5);
-            cr = cosf(euler_y * 0.5);
-            sr = sinf(euler_y * 0.5);
-            cy = cosf(euler_z * 0.5);
-            sy = sinf(euler_z * 0.5);
-
-            rot_quat.w = cr * cp * cy + sr * sp * sy;
-            rot_quat.x = sr * cp * cy - cr * sp * sy;
-            rot_quat.y = cr * sp * cy + sr * cp * sy;
-            rot_quat.z = cr * cp * sy - sr * sp * cy;
-
-            mag = Quat_GetMag(&rot_quat);
-
-            if (mag == 0.00) {
-                mag = 0.01;
-            }
-
-            Quat_Normalize(&rot_quat);
-
-            Quat_Mul(&temp, &world_view_rot, &rot_quat);
-            world_view_rot.w = rot_quat.w;
-            world_view_rot.x = rot_quat.x;
-            world_view_rot.y = rot_quat.y;
-            world_view_rot.z = rot_quat.z;
-
-            Quat_GetInverse(&temp, &world_view_rot);
-            world_view_rot_inverse.w = temp.w;
-            world_view_rot_inverse.x = temp.x;
-            world_view_rot_inverse.y = temp.y;
-            world_view_rot_inverse.z = temp.z;
-
-        }
-
-        sleep(10);
-
-    }
-}
 
 void Draw_Display(void)
 {
-    // remove moving -5 stuff from here and change that in character mover or something
-    G8RTOS_WaitSemaphore(&sem_SPIA);
-    ST7789_DrawRectangle(frog.x_pos, frog.y_pos, frog.width, frog.length, ST7789_WHITE);
-    //ST7789_DrawRectangle(frog.x_pos, frog.y_pos-5, frog.width, 5, ST7789_BLACK);
-    G8RTOS_SignalSemaphore(&sem_SPIA);
+
+        // remove moving -5 stuff from here and change that in character mover or something
+        // position linked list is going to have a marker to indicate already drawn
+        //uint32_t packet = 0; //G8RTOS_ReadFIFO(CHAR_POS_FIFO);
+        //uint16_t x_pos = (uint16_t)packet;
+        //uint16_t y_pos = (uint16_t)(packet >> 16);
+
+    if (frog.pos_count) // only if we have 1 position in character position we start drawing everything?
+    {
+        uint16_t x_pos = frog.tail_pos->x_pos;
+        uint16_t y_pos = frog.tail_pos->y_pos;
+        uint16_t x_oldpos = frog.tail_pos->previous_pos->x_pos;
+        uint16_t y_oldpos = frog.tail_pos->previous_pos->y_pos;
+
+        // Character draw
+        if ((x_pos || y_pos) && !frog.tail_pos->draw_done)
+        {
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_DrawRectangle(x_pos, y_pos, frog.width, frog.length, ST7789_WHITE);
+            ST7789_DrawRectangle(x_oldpos, y_oldpos, frog.width, frog.length, ST7789_BLACK);
+            //ST7789_DrawRectangle(frog.x_pos, frog.y_pos, frog.width, frog.length, ST7789_WHITE);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+            //frog.x_pos = x_pos;
+            //frog.y_pos = y_pos;
+            frog.tail_pos->draw_done = 1;
+        }
+
+        x_pos = obs.tail_pos->x_pos;
+        y_pos = obs.tail_pos->y_pos;
+        x_oldpos = obs.tail_pos->previous_pos->x_pos;
+        y_oldpos = obs.tail_pos->previous_pos->y_pos;
+
+                if ((x_pos || y_pos) && !obs.tail_pos->draw_done)
+                {
+
+
+                    // if we reached wall we have to start disappearing
+                    if (x_pos >= 198)
+                    {
+                        if (obs.partial >= 2)
+                        {
+                            obs.partial = obs.partial - 2;
+                            G8RTOS_WaitSemaphore(&sem_SPIA);
+                            ST7789_DrawRectangle(x_pos, y_pos, obs.partial, obs.length, ST7789_WHITE);
+                            ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
+                            G8RTOS_SignalSemaphore(&sem_SPIA);
+                        }
+                        else
+                        {
+                            obs.partial = 0;
+                            Obstacle_AddPosition(0, 20);
+                        }
+                    }
+                    else
+                    {
+                        G8RTOS_WaitSemaphore(&sem_SPIA);
+                        ST7789_DrawRectangle(x_pos, y_pos, obs.width, obs.length, ST7789_WHITE);
+                        ST7789_DrawRectangle(x_pos-2, y_pos, 4, obs.length, ST7789_BLACK);
+                        G8RTOS_SignalSemaphore(&sem_SPIA);
+                    }
+
+                    obs.tail_pos->draw_done = 1;
+                }
+    }
+
+
 }
 
-void CharacterMove_Thread(void) {
+void Obstacle_AddPosition(uint16_t x_pos, uint16_t y_pos)
+{
+
+    if (obs.pos_count >= MAX_NUM_POS) // if counter exits max number of positions
+    {
+        return -1; // exit with error
+    }
+    else // else if not exceeding max we insert item
+    {
+        if (obs.pos_count == 0) // if first item we insert
+        {
+            obs.positions[0].next_pos = &obs.positions[0];
+            obs.positions[0].previous_pos = &obs.positions[0];
+            obs.head_pos = &obs.positions[0];
+            obs.tail_pos = &obs.positions[0];
+        }
+        else // else if not first item we insert
+        {
+
+            obs.positions[obs.pos_count-1].next_pos = &obs.positions[obs.pos_count];
+            obs.positions[obs.pos_count].previous_pos = &obs.positions[obs.pos_count-1];
+            obs.positions[obs.pos_count].next_pos = &obs.positions[0];
+            obs.tail_pos = &obs.positions[obs.pos_count];
+        }
+
+        // then write data and increment position counter
+        obs.positions[obs.pos_count].x_pos = x_pos;
+        obs.positions[obs.pos_count].y_pos = y_pos;
+        obs.positions[obs.pos_count].draw_done = 0;
+        obs.pos_count++;
+    }
+
+}
+
+void Character_AddPosition(uint16_t x_pos, uint16_t y_pos)
+{
+
+    if (frog.pos_count >= MAX_NUM_POS) // if counter exits max number of positions
+    {
+        return -1; // exit with error
+    }
+    else // else if not exceeding max we insert item
+    {
+        if (frog.pos_count == 0) // if first item we insert
+        {
+            frog.positions[0].next_pos = &frog.positions[0];
+            frog.positions[0].previous_pos = &frog.positions[0];
+            frog.head_pos = &frog.positions[0];
+            frog.tail_pos = &frog.positions[0];
+        }
+        else // else if not first item we insert
+        {
+
+            frog.positions[frog.pos_count-1].next_pos = &frog.positions[frog.pos_count];
+            frog.positions[frog.pos_count].previous_pos = &frog.positions[frog.pos_count-1];
+            frog.positions[frog.pos_count].next_pos = &frog.positions[0];
+            frog.tail_pos = &frog.positions[frog.pos_count];
+        }
+
+        // then write data and increment position counter
+        frog.positions[frog.pos_count].x_pos = x_pos;
+        frog.positions[frog.pos_count].y_pos = y_pos;
+        frog.positions[frog.pos_count].draw_done = 0;
+        frog.pos_count++;
+    }
+
+}
+
+void Game_Thread(void) {
 
 
 
     // Initialize / declare any variables here
     int32_t joy_x, joy_y = 0;
     float joy_x_n, joy_y_n = 0;
-    bool down, up, left, right = 0;
-    bool falling = 0;
+    bool down, up, left, right, center_x, center_y = 0;
+    // center is a flag for when the joystick returns to center position
+    // used to avoid multiple joystick inputs when moving.
     uint32_t result = 0;
+
+    // This clears a couple of weird inputs the first time the program starts
+    result = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+    result = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+    result = 0;
 
     while(1) {
         // Get result from joystick
@@ -195,23 +223,22 @@ void CharacterMove_Thread(void) {
         joy_x = ((result >> 0) & 0xFFFF);
         joy_y = ((result >> 16) & 0xFFFF);
 
-        //joy_x = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
-        //joy_y = G8RTOS_ReadFIFO(JOYSTICK_FIFO);
+        // JOYSTICK NORMALIZATION
 
         // If joystick axis within deadzone, set to 0. Otherwise normalize it.
         if (joy_x < 1500 || joy_x > 2600)
         {
             joy_x_n = (2.0 * (joy_x - 0) / (4095 - 0)) - 1.0;
-            if (joy_x_n < 0)
+            if (joy_x_n < 0 && center_x && center_y)
             {
                 right = 1;
-                left, up, down = 0;
+                left, up, down, center_x = 0;
                 UARTprintf("right\n");
             }
-            else if (joy_x_n > 0)
+            else if (joy_x_n > 0 && center_x && center_y)
             {
                 left = 1;
-                right, up, down = 0;
+                right, up, down, center_x = 0;
                 UARTprintf("left\n");
             }
         }
@@ -219,22 +246,23 @@ void CharacterMove_Thread(void) {
         {
             joy_x_n = 0;
             left, right = 0;
+            center_x = 1;
         }
 
         if (joy_y < 1500 || joy_y > 2600)
         {
             joy_y_n = (2.0 * (joy_y - 0) / (4095 - 0)) - 1.0;
 
-            if (joy_y_n > 0)
+            if (joy_y_n > 0 && center_y && center_x)
             {
                 up = 1;
-                down, left, right = 0;
+                down, left, right, center_y = 0;
                 UARTprintf("up\n");
             }
-            else if (joy_y_n < 0)
+            else if (joy_y_n < 0 && center_y && center_x)
             {
                 down = 1;
-                up, left, right = 0;
+                up, left, right, center_y = 0;
                 UARTprintf("down\n");
             }
 
@@ -244,153 +272,119 @@ void CharacterMove_Thread(void) {
         {
             joy_y_n = 0;
             up, down = 0;
+            center_y = 1;
         }
 
-        /*
-        if (jump)
+
+        // Character move
+        if (up)
         {
-            if (dino.y_pos < 140 && falling == 0)
-            {
-                dino.y_pos += 5;
-                if (dino.y_pos >= 140)
-                    falling = 1;
-                G8RTOS_WaitSemaphore(&sem_SPIA);
-                ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
-                ST7789_DrawRectangle(dino.x_pos, dino.y_pos-5, dino.width, 5, ST7789_BLACK);
-                G8RTOS_SignalSemaphore(&sem_SPIA);
-            }
-            else
-            {
-                if (dino.y_pos >= 101 && falling == 1)
-                {
-                    dino.y_pos -= 5;
-                    if (dino.y_pos <= 101)
-                    {
-                        falling = 0;
-                        jump = 0;
-                    }
-                    ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
-                    ST7789_DrawRectangle(dino.x_pos, dino.y_pos+5, dino.width, dino.length, ST7789_BLACK);
-                }
-                else
-                    jump = 0;
-            }
+            // we should add a semaphore for a new position buffer thingie
+            uint16_t x_pos = frog.tail_pos->x_pos;
+            uint16_t y_pos = frog.tail_pos->y_pos + 20;
+            Character_AddPosition(x_pos, y_pos);
+            up = 0;
+        }
+        if (right)
+        {
+            uint16_t x_pos = frog.tail_pos->x_pos + 20;
+            uint16_t y_pos = frog.tail_pos->y_pos;
+            Character_AddPosition(x_pos, y_pos);
+            right = 0;
+        }
+        if (left)
+        {
+            uint16_t x_pos = frog.tail_pos->x_pos - 20;
+            uint16_t y_pos = frog.tail_pos->y_pos;
+            Character_AddPosition(x_pos, y_pos);
+            left = 0;
+        }
+        if (down)
+        {
+            uint16_t x_pos = frog.tail_pos->x_pos;
+            uint16_t y_pos = frog.tail_pos->y_pos - 20;
+            Character_AddPosition(x_pos, y_pos);
+            down = 0;
         }
 
-            // CONSIDER MOVING THIS DRAWING TO DISPLAY UPDATE THREAD
-        ST7789_DrawRectangle(dino.x_pos, dino.y_pos, dino.width, dino.length, ST7789_WHITE);
-        */
+
+        // should we spawn and kill vehicle threads here?
+        // or should we just do the whole vehicle thing here? lets try option 2 first
+
+        // Obstacle move
+        if (obs.tail_pos->x_pos <= 230)
+        {
+            uint16_t x_pos = obs.tail_pos->x_pos+2;
+            uint16_t y_pos = obs.tail_pos->y_pos;
+            Obstacle_AddPosition(x_pos, y_pos);
+        }
+        else
+        {
+            Obstacle_AddPosition(0, 20);
+        }
+
+
+        // check win
+        int16_t x_diff = frog.tail_pos->x_pos - 20;
+        int16_t y_diff = frog.tail_pos->y_pos - 240;
+        if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
+        {
+            UARTprintf("YOU WON!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(ST7789_GREEN);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+        x_diff = frog.tail_pos->x_pos - 80;
+        y_diff = frog.tail_pos->y_pos - 240;
+        if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
+        {
+            UARTprintf("YOU WON!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(ST7789_GREEN);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+        x_diff = frog.tail_pos->x_pos - 140;
+        y_diff = frog.tail_pos->y_pos - 240;
+        if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
+        {
+            UARTprintf("YOU WON!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(ST7789_GREEN);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+        x_diff = frog.tail_pos->x_pos - 200;
+        y_diff = frog.tail_pos->y_pos - 240;
+        if (x_diff >= 0 && x_diff < 40 && y_diff >= 0 && y_diff <= 20)
+        {
+            UARTprintf("YOU WON!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(ST7789_GREEN);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+        // check collision
+        x_diff = frog.tail_pos->x_pos - obs.tail_pos->x_pos;
+        y_diff = frog.tail_pos->y_pos - obs.tail_pos->y_pos;
+        if (x_diff >= -20 && x_diff < 40 && y_diff >= 0 && y_diff < 20)
+        {
+            UARTprintf("YOU LOST!!\n");
+            G8RTOS_WaitSemaphore(&sem_SPIA);
+            ST7789_Fill(0x001F);
+            G8RTOS_SignalSemaphore(&sem_SPIA);
+        }
+
+
+        // check if on water
+
+
+
         // sleep
-        sleep(10);
+        sleep(50);
     }
 }
 
 
-void Cube_Thread(void) {
-    cube_t cube;
 
-    // Get spawn position
-    uint32_t packet = G8RTOS_ReadFIFO(SPAWNCOOR_FIFO);
-
-    cube.x_pos = (packet >> 20 & 0xFFF) - 100;
-    cube.y_pos = (packet >> 8 & 0xFFF) - 100;
-    cube.z_pos = -(packet & 0xFF) - 50;
-
-    cube.width = 50;
-    cube.height = 50;
-    cube.length = 50;
-
-    Quat_t v[8];
-    Quat_t v_relative[8];
-
-    Cube_Generate(v, &cube);
-
-    // Declare a 2d array to store interpolated points
-    // This is faster and more robust at the cost of vastly increased space.
-    uint32_t m = Num_Interpolated_Points + 1;
-    Vect3D_t interpolated_points[12][Num_Interpolated_Points + 2];
-    Vect3D_t projected_point;
-
-    Quat_t camera_pos;
-    Quat_t camera_frame_offset;
-
-    Quat_t view_rot_inverse;
-
-    uint8_t kill = 0;
-
-    while(1) {
-
-        G8RTOS_WaitSemaphore(&sem_KillCube);
-        if (kill_cube) {
-            kill = 1;
-            kill_cube = 0;
-        }
-        G8RTOS_SignalSemaphore(&sem_KillCube);
-
-        // set so that the positions are static during viewpoint calculations
-        camera_pos.x = world_camera_pos.x;
-        camera_pos.y = world_camera_pos.y;
-        camera_pos.z = world_camera_pos.z;
-
-        camera_frame_offset.x = world_camera_frame_offset.x;
-        camera_frame_offset.y = world_camera_frame_offset.y;
-        camera_frame_offset.z = world_camera_frame_offset.z;
-
-        view_rot_inverse.w = world_view_rot_inverse.w;
-        view_rot_inverse.x = world_view_rot_inverse.x;
-        view_rot_inverse.y = world_view_rot_inverse.y;
-        view_rot_inverse.z = world_view_rot_inverse.z;
-
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < m+1; j++) {
-                getViewOnScreen(&projected_point, &camera_frame_offset, &(interpolated_points[i][j]));
-                G8RTOS_WaitSemaphore(&sem_SPIA);
-                ST7789_DrawPixel(projected_point.x, projected_point.y, ST7789_BLACK);
-                G8RTOS_SignalSemaphore(&sem_SPIA);
-            }
-        }
-
-        // If kill is set, killself after clearing the cube from the screen.
-        if (kill) {
-            num_cubes--;
-            G8RTOS_KillSelf();
-        }
-
-        // Get relative view points (for perspective calculations)
-        for (int i = 0; i < 8; i++) {
-            getViewRelative(&(v_relative[i]), &camera_pos, &(v[i]), &view_rot_inverse);
-        }
-
-        // Interpolate all pixels between vertices
-        interpolatePoints(interpolated_points[0], &v_relative[0], &v_relative[1], m);
-        interpolatePoints(interpolated_points[1], &v_relative[1], &v_relative[2], m);
-        interpolatePoints(interpolated_points[2], &v_relative[2], &v_relative[3], m);
-        interpolatePoints(interpolated_points[3], &v_relative[3], &v_relative[0], m);
-        interpolatePoints(interpolated_points[4], &v_relative[0], &v_relative[4], m);
-        interpolatePoints(interpolated_points[5], &v_relative[1], &v_relative[5], m);
-        interpolatePoints(interpolated_points[6], &v_relative[2], &v_relative[6], m);
-        interpolatePoints(interpolated_points[7], &v_relative[3], &v_relative[7], m);
-        interpolatePoints(interpolated_points[8], &v_relative[4], &v_relative[5], m);
-        interpolatePoints(interpolated_points[9], &v_relative[5], &v_relative[6], m);
-        interpolatePoints(interpolated_points[10], &v_relative[6], &v_relative[7], m);
-        interpolatePoints(interpolated_points[11], &v_relative[7], &v_relative[4], m);
-
-        // Draw all points by projecting them to the screen.
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < m+1; j++) {
-                getViewOnScreen(&projected_point, &camera_frame_offset, &(interpolated_points[i][j]));
-
-                if (interpolated_points[i][j].z < 0) {
-                    G8RTOS_WaitSemaphore(&sem_SPIA);
-                    ST7789_DrawPixel(projected_point.x, projected_point.y, ST7789_BLUE);
-                    G8RTOS_SignalSemaphore(&sem_SPIA);
-                }
-            }
-        }
-
-        sleep(20);
-    }
-}
 
 void Read_Buttons() {
     uint8_t buttons;
@@ -406,8 +400,10 @@ void Read_Buttons() {
         buttons = ~(MultimodButtons_Get());
         G8RTOS_SignalSemaphore(&sem_I2CA);
 
+        /*
         if (buttons & SW1) {
             // Spawn cube
+
             int8_t result = G8RTOS_AddThread(Cube_Thread, 254, "cube\0");
 
             if (result == NO_ERROR) {
@@ -438,7 +434,7 @@ void Read_Buttons() {
             } else {
                 move_or_rot = 1;
             }
-        }
+        }*/
 
         GPIOIntClear(BUTTONS_INT_GPIO_BASE, BUTTONS_INT_PIN);
         GPIOIntEnable(BUTTONS_INT_GPIO_BASE, BUTTONS_INT_PIN);

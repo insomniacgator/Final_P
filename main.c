@@ -24,27 +24,6 @@
 
 /********************************Public Functions***********************************/
 
-void task0() {
-    int counter0 = 0;
-    while(1) {
-        counter0 += 1;
-        G8RTOS_WaitSemaphore(&sem_UART);
-        UARTprintf("Task 0 counter is at: %d\n", counter0);
-        G8RTOS_SignalSemaphore(&sem_UART);
-        sleep(1000);
-
-    }
-}
-
-void task1() {
-    int counter1 = 0;
-    while(1) {
-        counter1 += 2;
-        UARTprintf("Task 1 counter is at: %d\n", counter1);
-        G8RTOS_KillSelf();
-        sleep(1000);
-    }
-}
 
 
 /********************************Public Functions***********************************/
@@ -53,10 +32,22 @@ void task1() {
 
 int main(void)
 {
-    frog.x_pos = 110;
-    frog.y_pos = 0;
+    //
+    //frog.y_pos = 0;
     frog.length = 20;
     frog.width = 20;
+    frog.pos_count = 0;
+    uint16_t x_pos = 120;
+    uint16_t y_pos = 0;
+    Character_AddPosition(x_pos, y_pos);
+
+    obs.length = 20;
+    obs.width = 40;
+    obs.pos_count = 0;
+    obs.partial = obs.width;
+    x_pos = 0;
+    y_pos = 20;
+    Obstacle_AddPosition(x_pos, y_pos);
 
     // Sets clock speed to 80 MHz. You'll need it!
 
@@ -73,14 +64,15 @@ int main(void)
 
     G8RTOS_InitFIFO(SPAWNCOOR_FIFO);
     G8RTOS_InitFIFO(JOYSTICK_FIFO);
+    G8RTOS_InitFIFO(CHAR_POS_FIFO);
 
 
-    G8RTOS_AddThread(task1, 200, "idle\0");
+    //G8RTOS_AddThread(task1, 200, "idle\0");
     G8RTOS_AddThread(Idle_Thread, 255, "idle\0");
     //G8RTOS_AddThread(CamMove_Thread, 253, "camera\0");
     G8RTOS_AddThread(Read_Buttons, 252, "buttons\0");
     G8RTOS_AddThread(Read_JoystickPress, 252, "joystick_s\0");
-    G8RTOS_AddThread(CharacterMove_Thread, 4, "charactermove_thread\0");
+    G8RTOS_AddThread(Game_Thread, 4, "game_thread\0");
     //G8RTOS_AddThread(LED_Thread, 254, "threads\0");
     
 
@@ -88,8 +80,9 @@ int main(void)
     G8RTOS_Add_APeriodicEvent(GPIOD_Handler, 5, 19);
 
     //G8RTOS_Add_PeriodicEvent(Print_WorldCoords, 100, 2);
-    G8RTOS_Add_PeriodicEvent(Draw_Display, 32, 1);
     G8RTOS_Add_PeriodicEvent(Get_Joystick, 50, 2);
+    G8RTOS_Add_PeriodicEvent(Draw_Display, 100, 4);
+
     InitWorld();
     G8RTOS_Launch();
     while (1);
