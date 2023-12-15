@@ -74,13 +74,28 @@ void Draw_Display(void)
         uint16_t x_oldpos = frog.tail_pos->previous_pos->x_pos;
         uint16_t y_oldpos = frog.tail_pos->previous_pos->y_pos;
 
+        uint16_t bg_color = 0;
+        if (y_oldpos == 0 || y_oldpos == 120)
+        {
+            bg_color = 0b1100100000011000;
+        }
+        else if (y_oldpos >= 140 && y_oldpos < 240 )
+        {
+            bg_color = 0b1011000100100000;
+        }
+        else
+        {
+            bg_color = 0x0000;
+        }
+
+
         // Character draw
         if ((x_pos || y_pos) && !frog.tail_pos->draw_done)
         {
             G8RTOS_WaitSemaphore(&sem_SPIA);
             ST7789_DrawRectangle(x_pos, y_pos, frog.width, frog.length, ST7789_WHITE);
             if (frog.pos_count > 1)
-                ST7789_DrawRectangle(x_oldpos, y_oldpos, frog.width, frog.length, ST7789_BLACK);
+                ST7789_DrawRectangle(x_oldpos, y_oldpos, frog.width, frog.length, bg_color);
             //ST7789_DrawRectangle(frog.x_pos, frog.y_pos, frog.width, frog.length, ST7789_WHITE);
             G8RTOS_SignalSemaphore(&sem_SPIA);
             //frog.x_pos = x_pos;
